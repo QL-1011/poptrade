@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.poptrade.common.exception.BusinessException;
 import com.poptrade.common.page.PageResult;
+import com.poptrade.common.util.JwtUtil;
 import com.poptrade.dto.LoginDTO;
 import com.poptrade.dto.UserQueryDTO;
 import com.poptrade.dto.UserSaveDTO;
 import com.poptrade.entity.User;
 import com.poptrade.mapper.UserMapper;
 import com.poptrade.service.UserService;
+import com.poptrade.vo.LoginVO;
 import com.poptrade.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,23 +32,24 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // ======================== 通用 ========================
 
     @Override
-    public UserVO login(LoginDTO dto) {
+    public LoginVO login(LoginDTO dto) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, dto.getUsername()));
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            // 不区分"用户不存在"和"密码错误"，防止撞库
             throw new BusinessException("用户名或密码错误");
         }
         if (User.STATUS_DISABLED == user.getStatus()) {
             throw new BusinessException("账号已被禁用，请联系管理员");
         }
+        String token = jwtUtil.generate(user.getId(), user.getRole());
         log.info("用户登录成功: {}", user.getUsername());
-        return toVO(user);
+        return new LoginVO(token, toVO(user));
     }
 
     @Override
@@ -73,7 +76,7 @@ public class UserServiceImpl implements UserService {
                 .like(StringUtils.hasText(query.getRealName()), User::getRealName, query.getRealName())
                 .eq(query.getStatus() != null, User::getStatus, query.getStatus())
                 .eq(query.getRole() != null, User::getRole, query.getRole())
-                .orderByDesc(User::getCreateTime);
+                .orderByAsc(User::getId);
 
         Page<User> page = userMapper.selectPage(
                 new Page<>(query.getPageNum(), query.getPageSize()), wrapper);

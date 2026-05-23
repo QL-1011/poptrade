@@ -6,6 +6,7 @@ import com.poptrade.dto.LoginDTO;
 import com.poptrade.dto.UserQueryDTO;
 import com.poptrade.dto.UserSaveDTO;
 import com.poptrade.service.UserService;
+import com.poptrade.vo.LoginVO;
 import com.poptrade.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +34,7 @@ public class UserController {
 
     @Operation(summary = "用户登录")
     @PostMapping("/api/user/login")
-    public Result<UserVO> login(@Valid @RequestBody LoginDTO dto) {
+    public Result<LoginVO> login(@Valid @RequestBody LoginDTO dto) {
         return Result.success(userService.login(dto));
     }
 

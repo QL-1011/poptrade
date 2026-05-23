@@ -4,6 +4,7 @@ import com.poptrade.common.page.PageResult;
 import com.poptrade.dto.LoginDTO;
 import com.poptrade.dto.UserQueryDTO;
 import com.poptrade.dto.UserSaveDTO;
+import com.poptrade.vo.LoginVO;
 import com.poptrade.vo.UserVO;
 
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
  */
 public interface UserService {
 
-    /** 用户登录，返回含 role 的用户信息供前端判断跳转 */
-    UserVO login(LoginDTO dto);
+    /** 用户登录，返回 JWT Token 和用户信息 */
+    LoginVO login(LoginDTO dto);
 
     /** 顾客自助注册，role 固定为顾客，密码 Bcyrpt加密 */
     void register(UserSaveDTO dto);

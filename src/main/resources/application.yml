@@ -23,6 +23,11 @@ spring:
           max-idle: 8
           min-idle: 0
 
+# JWT 配置
+jwt:
+  secret: PopTrade2024SecretKeyForJWTTokenGenerationAndValidation
+  expiration: 86400000
+
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.poptrade.entity
