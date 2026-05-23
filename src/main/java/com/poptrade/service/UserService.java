@@ -16,7 +16,7 @@ public interface UserService {
     /** 用户登录，返回含 role 的用户信息供前端判断跳转 */
     UserVO login(LoginDTO dto);
 
-    /** 顾客自助注册，role 固定为顾客，密码 MD5 加密 */
+    /** 顾客自助注册，role 固定为顾客，密码 Bcyrpt加密 */
     void register(UserSaveDTO dto);
 
     /** 根据 ID 查询用户 */
