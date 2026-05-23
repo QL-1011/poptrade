@@ -100,13 +100,13 @@ CREATE TABLE `order_item` (
 ## 种子数据
 
 ```sql
--- 默认管理员账号：admin / admin123
+-- 默认管理员账号：admin / admin123（BCrypt 加密）
 INSERT INTO `user` (username, password, real_name, role, status) VALUES
-('admin', MD5('admin123'), '系统管理员', 0, 1);
+('admin', '$2b$10$PAyxAU8hawLhbeJ61PbX/OGvi95w46vkQ.7mjMpfJumV4CwHt0gvq', '系统管理员', 0, 1);
 
--- 测试顾客账号：test / test123
+-- 测试顾客账号：test / test123（BCrypt 加密）
 INSERT INTO `user` (username, password, real_name, role, status) VALUES
-('test', MD5('test123'), '测试用户', 1, 1);
+('test', '$2b$10$KCNe370C4Ij6kl/blpNZ9uxRm0SFBbEXFpshH8nk0DeO0vCE5SGSO', '测试用户', 1, 1);
 
 -- 示例分类
 INSERT INTO `category` (category_name, sort) VALUES

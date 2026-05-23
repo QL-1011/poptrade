@@ -14,17 +14,15 @@ import com.poptrade.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
-
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
  * 用户模块核心业务逻辑。
- * <p>密码使用 MD5 加盐前先做一次摘要存储；生产环境应替换为 BCrypt。</p>
+ * <p>密码使用 BCrypt 加密，同一原文每次生成的密文不同，安全性远高于 MD5。</p>
  */
 @Slf4j
 @Service
@@ -32,6 +30,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // ======================== 通用 ========================
 
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public UserVO login(LoginDTO dto) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, dto.getUsername()));
-        if (user == null || !encryptPassword(dto.getPassword()).equals(user.getPassword())) {
+        if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             // 不区分"用户不存在"和"密码错误"，防止撞库
             throw new BusinessException("用户名或密码错误");
         }
@@ -173,8 +172,8 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    /** MD5 加密 */
-    private static String encryptPassword(String raw) {
-        return DigestUtils.md5DigestAsHex(raw.getBytes(StandardCharsets.UTF_8));
+    /** BCrypt 加密，自动加盐 */
+    private String encryptPassword(String raw) {
+        return passwordEncoder.encode(raw);
     }
 }
