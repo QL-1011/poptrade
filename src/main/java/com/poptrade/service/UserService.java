@@ -1,6 +1,7 @@
 package com.poptrade.service;
 
 import com.poptrade.common.page.PageResult;
+import com.poptrade.dto.ChangePasswordDTO;
 import com.poptrade.dto.LoginDTO;
 import com.poptrade.dto.UserQueryDTO;
 import com.poptrade.dto.UserSaveDTO;
@@ -20,7 +21,8 @@ public interface UserService {
     /** 顾客自助注册，role 固定为顾客，密码 Bcyrpt加密 */
     void register(UserSaveDTO dto);
 
-    /** 根据 ID 查询用户 */
+    /** 根据 ID 查询
+     * 用户 */
     UserVO getById(Long id);
 
     /** 分页 + 多条件查询 */
@@ -40,4 +42,7 @@ public interface UserService {
 
     /** 管理员启用/禁用用户 */
     void updateStatus(Long id, Integer status);
+
+    /** 修改当前用户的密码 */
+    void changePassword(Long userId, ChangePasswordDTO dto);
 }

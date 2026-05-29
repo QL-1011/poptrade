@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.poptrade.common.exception.BusinessException;
 import com.poptrade.common.page.PageResult;
 import com.poptrade.common.util.JwtUtil;
+import com.poptrade.dto.ChangePasswordDTO;
 import com.poptrade.dto.LoginDTO;
 import com.poptrade.dto.UserQueryDTO;
 import com.poptrade.dto.UserSaveDTO;
@@ -178,5 +179,20 @@ public class UserServiceImpl implements UserService {
     /** BCrypt 加密，自动加盐 */
     private String encryptPassword(String raw) {
         return passwordEncoder.encode(raw);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void changePassword(Long userId, ChangePasswordDTO dto) {
+        User user = requireExists(userId);
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            throw new BusinessException("原密码错误");
+        }
+        if (passwordEncoder.matches(dto.getNewPassword(), user.getPassword())) {
+            throw new BusinessException("新密码不能与原密码相同");
+        }
+        user.setPassword(encryptPassword(dto.getNewPassword()));
+        userMapper.updateById(user);
+        log.info("密码修改成功: userId={}", userId);
     }
 }

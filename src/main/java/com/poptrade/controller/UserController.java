@@ -2,6 +2,8 @@ package com.poptrade.controller;
 
 import com.poptrade.common.page.PageResult;
 import com.poptrade.common.result.Result;
+import com.poptrade.common.util.UserContext;
+import com.poptrade.dto.ChangePasswordDTO;
 import com.poptrade.dto.LoginDTO;
 import com.poptrade.dto.UserQueryDTO;
 import com.poptrade.dto.UserSaveDTO;
@@ -43,6 +45,13 @@ public class UserController {
     public Result<Void> register(@Valid @RequestBody UserSaveDTO dto) {
         dto.setRole(1);
         userService.register(dto);
+        return Result.success();
+    }
+
+    @Operation(summary = "修改密码（当前登录用户）")
+    @PutMapping("/api/user/password")
+    public Result<Void> changePassword(@Valid @RequestBody ChangePasswordDTO dto) {
+        userService.changePassword(UserContext.getUserId(), dto);
         return Result.success();
     }
 

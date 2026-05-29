@@ -28,6 +28,13 @@ jwt:
   secret: PopTrade2024SecretKeyForJWTTokenGenerationAndValidation
   expiration: 86400000
 
+# DeepSeek AI 配置
+ai:
+  deepseek:
+    base-url: https://api.deepseek.com
+    api-key: ${DEEPSEEK_API_KEY:}
+    model: deepseek-v4-flash
+
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.poptrade.entity
